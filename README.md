@@ -6,11 +6,11 @@ Sometimes actions speak louder than words:
 | `new Date(1435982400000);`  | `rTime(1435982400000);`
 | `new Date(2012, 0);`        | `rTime(2012);`
 | `new Date().getTime();`     | `rTime.ms();`
-| `new Date(new Date().getFullYear(), 1, 1, 14);` | `rTime({'month': 2, 'hour': 14});`
 | `new Date().getFullYear();` | `rTime.getLocal.year(rTime())`
 | `new Date().getUTCHours();` | `rTime.get.hour(rTime());`
-| `new Date().getTimezoneOffset();` | `rTime.get.minutesToUTC(rTime());`
-
+| `new Date().getTimezoneOffset();` | `rTime.getLocal.minutesToUTC(rTime());`
+| `new Date(new Date().getFullYear(), 1, 1, 14);` | `rTime({'month': 2, 'hour': 14});`
+| `new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate(), 14, 30);` | `rTime({'hour': 14, 'minute': 30});`
 
 From Examples (todo: link)
 
