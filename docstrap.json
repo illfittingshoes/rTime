@@ -1,0 +1,22 @@
+{
+    "opts": {
+        "destination": "./docs/jsdocs/",
+        "recurse": true,
+        "tutorials": "./docs/tutorials"
+    },
+    "templates": {
+        "systemName"            : "rTime JS Date Library",
+        "footer"                : "",
+        "copyright"             : "Joe Shirley",
+        "includeDate"           : true,
+        "navType"               : "vertical",
+        "theme"                 : "yeti",
+        "linenums"              : true,
+        "collapseSymbols"       : false,
+        "inverseNav"            : false,
+        "outputSourceFiles"     : true,
+        "outputSourcePath"      : true,
+        "dateFormat"            : "MMM D, YYYY",
+        "sort"                  : false
+    }
+}

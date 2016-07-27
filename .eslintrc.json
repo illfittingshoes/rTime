@@ -1,0 +1,45 @@
+{
+	"extends": "airbnb-base",
+	"env": {
+		"browser": true,
+		"mocha": true
+	},
+	"parserOptions": {
+		"generators": true
+	},
+
+	"rules": {
+		"no-invalid-this": 2,
+		"dot-location": [ 2, "property" ],
+		"wrap-iife": [ 2, "inside" ],
+		"yoda": [ 2, "never", {
+			"exceptRange": true
+		} ],
+		"no-inner-declarations": [ 2, "both" ],
+		"complexity": [ 1, 8 ],
+		"no-warning-comments": [ 1, { "terms": [ "todo", "fixme" ], "location": "start" } ],
+		"valid-jsdoc": [ 1, {
+			"requireReturn": false
+		} ],
+		"no-use-before-define": [ 2, "nofunc" ],
+		"constructor-super": 2,
+		"no-var": 0,
+		"prefer-spread": 1,
+		"require-yield": 1,
+		"prefer-reflect": 1,
+		"func-names": 2,
+		"func-style": [ 2, "declaration" ],
+		"indent": [ 2, "tab", { "SwitchCase": 1, "VariableDeclarator": 1, "outerIIFEBody": 1 } ],
+		"key-spacing": [ 2, { "mode": "minimum" } ],
+		"no-mixed-spaces-and-tabs": [ 2, "smart-tabs" ],
+		"no-multi-spaces": [ 2, {
+			"exceptions": {
+				"ImportDeclaration": true,
+				"Property": true
+			}
+		} ],
+		"newline-after-var": 2,
+		"newline-before-return": 2,
+		"operator-linebreak": [ 2, "before" ]
+	}
+}
