@@ -136,7 +136,9 @@ rTime.getLocal.date(rTime());
 ```
 
 ### Time Field Objects
-Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTime allows for new date/times to be created by passing in a key/value object with any desired fields. They use the rTime standard field names and behaviors. Time Field Objects can have anywhere from zero fields (`rTime({})` is the same as `rTime()`) to all of them, in any order, and can be "sparsely" populated. The format is simple; here are a couple examples:
+Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTime allows for new date/times to be created by passing in a key/value object with any desired fields. They use the rTime standard field names and behaviors.
+
+Time Field Objects can have zero or more fields, in any order, and can be "sparsely" populated. The format is simple; here are a couple examples:
 
 ```javascript
 const allFields = {
@@ -150,12 +152,10 @@ const allFields = {
 }
 
 const aCoupleFields = {
-	'year': 2011,
-	'month': 2,
-	'dayOfMonth': 13,
 	'hour': 14,
-	'minute': 15,
-	'second': 16,
-	'ms': 170
+	'minute': 30
 }
+
+// maybe the object is created from user input
+const stillOkay = {}
 ```
