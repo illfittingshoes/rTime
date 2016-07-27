@@ -31,9 +31,9 @@ Most differences are small fixes for the annoying, treacherous, or otherwise sub
 
 * `Date` months are zero-based, so 1 === February
 	* in rTime, as in reality, month 1 === January
-* The original `Date` naming is madness, so rTime makes [some adjustments](# time-field-names) from [their originals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) for consistency and/or accuracy. For familiarity, alias functions have been included using their [original names](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
-	* No aliases work in [time field objects](# time-field-objects)
-* `Date# getTimezoneOffset()` is backwards
+* The original `Date` naming is madness, so rTime makes [some adjustments](#time-field-names) from [their originals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) for consistency and/or accuracy. For familiarity, alias functions have been included using their [original names](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
+	* No aliases work in [time field objects](#time-field-objects)
+* `Date#getTimezoneOffset()` is backwards
 	* If you're in GMT-0400 (UTC minus 4 hours), `Date` will give you `240` instead of `-240`
 	* rTime adds some clearer functions:
 		* `rTime.getLocal.[ms/minutes/hours]ToUTC()`
@@ -41,7 +41,7 @@ Most differences are small fixes for the annoying, treacherous, or otherwise sub
 	* `rTime.[get/getLocal].timezoneOffset()` is aliased (`rTime.getLocal.minutesToUTC()`)
 * Call style is more functional than OOP
 
-One sweeping difference is in priorities. For both `Date` and rTime, all dates are stored as UTC, most often as a conversion from local time. `Date` prioritizes making the simple things easy most of the time, but that makes things difficult sometimes, such as [relative date/time calculations or changing the nature of a date/time](# advanced-date-time-manipulation).
+One sweeping difference is in priorities. For both `Date` and rTime, all dates are stored as UTC, most often as a conversion from local time. `Date` prioritizes making the simple things easy most of the time, but that makes things difficult sometimes, such as [relative date/time calculations or changing the nature of a date/time](#advanced-date-time-manipulation).
 
 rTime attempts to prioritize the latter by explicitly requiring the word "local" whenever a conversion from UTC to local time occurs.
 
@@ -49,8 +49,8 @@ Here's a comparison:
 
 | Intention | Original | `rTime` |
 | --------- | -------- | ------- |
-| Retrieve a field in local time | `Date# get[FieldName]()` | `rTime.getLocal.[fieldName](aDate)`
-| Retrieve a field in UTC (stored) time | `Date# getUTC[FieldName]()` | `rTime.get.[fieldName](aDate)`
+| Retrieve a field in local time | `Date#get[FieldName]()` | `rTime.getLocal.[fieldName](aDate)`
+| Retrieve a field in UTC (stored) time | `Date#getUTC[FieldName]()` | `rTime.get.[fieldName](aDate)`
 
 ## Installation
 ### Get From NPM
@@ -83,7 +83,7 @@ rTime is a better option than the `Date` API basically every time, but there are
 Note: Unlike Moment, JQuery, the like, there is no such thing as "an rTime object" for function chaining: it's just plain old Date objects all the way down.
 
 ### Common `Date` Usage
-In most scenarios, rTime's biggest benefit is removing [foot](http://www.stroustrup.com/bs_faq.html# really-say-that) [guns](https://github.com/stepframe/Style-Guide# brendan-eich-the-creator-of-javascript-talks-a-lot-about-foot-guns): it's easier, less error-prone, provides the option of using [time field objects](# time-field-objects). And because it's fashioned after `Date`, it's still pretty familiar.
+In most scenarios, rTime's biggest benefit is removing [foot](http://www.stroustrup.com/bs_faq.html#really-say-that) [guns](https://github.com/stepframe/Style-Guide#brendan-eich-the-creator-of-javascript-talks-a-lot-about-foot-guns): it's easier, less error-prone, provides the option of using [time field objects](#time-field-objects). And because it's fashioned after `Date`, it's still pretty familiar.
 
 ### Advanced Date/Time Manipulation
 Working with different relationships of date/times, which is theoretically fairly simple, is where rTime really comes into its own:
@@ -106,19 +106,19 @@ Moment could easily handle these things. However, that is still overkill because
 
 `rTime()` and `rTime.ms()` can also:
 * Accept a time field object(time-field-objects)
-* Accept an array of any kind of arguments#### Time Field Naming
+* Accept an array of any kind of arguments####Time Field Naming
 rTime uses slightly different names for everything, because most of the names used by `Date` could use improvement. For familiarity, all the original names are aliased for every function.
 
 ### Time Field Names
 rTime tries to be as consistent as possible, especially with function and field names. For familiarity, there are alias functions for each of the original `Date`-style names.
 
-**Note**: [Time Field Objects](# time-field-objects) do not support any aliases.
+**Note**: [Time Field Objects](#time-field-objects) do not support any aliases.
 
 Here is what rTime calls everything:
 
 | Original | `rTime` | Additional Aliases | Notes
 | -------- | ------- | ------------------ | -----
-| fullYear | year    |                    | `Date# getYear()` is completely excluded because it's totally vestigial
+| fullYear | year    |                    | `Date#getYear()` is completely excluded because it's totally vestigial
 | month    | month   |                    | rTime's `month` is always one-based
 | date     | dayOfMonth |                 | "date" is ambiguous
 | day      | day     | "dayOfWeek", for consistency with "dayOfMonth" |
@@ -151,13 +151,3 @@ Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTi
 ```
 
 **Note**: none of the function name aliases work as time field object property names. For example, `{"fullYear": 2012}` will not work (should be just "year"), nor will {"dayOfWeek": 2} (should be just "day").
-
-### Timezone Function Shenanigans
-`Date` has one explicit timezone function: `Date# getTimezoneOffset()`. It returns minutes, which is fine, but it's backwards: If you're in GMT-0400, it will return 240 (4 hours, but not negative like it should be).
-
-`rTime.getLocal` has several more straightforward functions:
-
-* `rTime.getLocal.[ms/minutes/hours]ToUTC()`
-* `rTime.getLocal.[ms/minutes/hours]FromUTC()`
-
-`rTime.[get/getLocal].timezoneOffset()` is also available, as an alias of `rTime.getLocal.minutesToUTC()` for familiarity.
