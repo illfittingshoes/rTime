@@ -59,21 +59,21 @@ Here are three date/times created three different ways:
 rTime, time field objects:
 ```javascript
 rTime({
-	"year": 2011,
-	"month": 2,
-	"dayOfMonth": 3,
-	"hour": 4,
-	"minute": 5,
-	"second": 6,
-	"ms": 7
+	'year': 2011,
+	'month': 2,
+	'dayOfMonth': 3,
+	'hour': 4,
+	'minute': 5,
+	'second': 6,
+	'ms': 7
 });
 rTime({
-	"month": 2,
-	"hour": 14
+	'month': 2,
+	'hour': 14
 });
 rTime({
-	"hour": 3,
-	"minute": 45
+	'hour': 3,
+	'minute': 45
 });
 ```
 rTime, `new Date()` style:
@@ -104,9 +104,9 @@ const year = rTime.get.year(rTime()) + 1;
 
 rTime({
 	year,
-	"month": 1,
-	"dayOfMonth": 21,
-	"hour": 11
+	'month': 1,
+	'dayOfMonth': 21,
+	'hour': 11
 });
 ```
 rTime, traditional `new Date()` style:

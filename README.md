@@ -6,7 +6,7 @@ Sometimes actions speak louder than words:
 | `new Date(1435982400000);`  | `rTime(1435982400000);`
 | `new Date(2012, 0);`        | `rTime(2012);`
 | `new Date().getTime();`     | `rTime.ms();`
-| `new Date(new Date().getFullYear(), 1, 1, 14);` | `rTime({"month": 2, "hour": 14});`
+| `new Date(new Date().getFullYear(), 1, 1, 14);` | `rTime({'month': 2, 'hour': 14});`
 | `new Date().getFullYear();` | `rTime.getLocal.year(rTime())`
 | `new Date().getUTCHours();` | `rTime.get.hour(rTime());`
 | `new Date().getTimezoneOffset();` | `rTime.get.minutesToUTC(rTime());`
@@ -136,18 +136,26 @@ rTime.getLocal.date(rTime());
 ```
 
 ### Time Field Objects
-Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTime allows for new date/times to be created by passing in a key/value object with any desired fields. They use the rTime standard field names and behaviors. Time Field Objects can have anywhere from zero fields (`rTime({})` is the same as `rTime()`) to all of them, in any order, and can be "sparsely" populated. The format is simple; here is an example with one of everything:
+Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTime allows for new date/times to be created by passing in a key/value object with any desired fields. They use the rTime standard field names and behaviors. Time Field Objects can have anywhere from zero fields (`rTime({})` is the same as `rTime()`) to all of them, in any order, and can be "sparsely" populated. The format is simple; here are a couple examples:
 
 ```javascript
-{
-	"year": 2011,
-	"month": 2,
-	"day": 13,
-	"hour": 14,
-	"minute": 15,
-	"second": 16,
-	"ms": 170
+const allFields = {
+	'year': 2011,
+	'month': 2,
+	'dayOfMonth': 13,
+	'hour': 14,
+	'minute': 15,
+	'second': 16,
+	'ms': 170
+}
+
+const aCoupleFields = {
+	'year': 2011,
+	'month': 2,
+	'dayOfMonth': 13,
+	'hour': 14,
+	'minute': 15,
+	'second': 16,
+	'ms': 170
 }
 ```
-
-**Note**: none of the function name aliases work as time field object property names. For example, `{"fullYear": 2012}` will not work (should be just "year"), nor will {"dayOfWeek": 2} (should be just "day").
