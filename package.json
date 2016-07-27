@@ -1,6 +1,6 @@
 {
   "name": "rtime",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A small Date/Time library to make using JavaScript's built-in Date object easy and consistent",
   "main": "lib/rTime.js",
   "scripts": {

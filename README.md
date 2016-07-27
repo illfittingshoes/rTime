@@ -15,10 +15,10 @@ Sometimes actions speak louder than words:
 From Examples (todo: link)
 
 ## Description
-rTime is a static, relatively low-level library for creating and retrieving data from Date objects, dealing with the `Date`oddities _so we don't have to_. It from the desire to prevent exasperated face-palms while working with the `Date` object and its many, many quirks:
+rTime is a static, relatively low-level library for creating and retrieving data from Date objects, dealing with the `Date` oddities _so we don't have to_. `Date` oddities like:
 
 * Months are zero-based
-* Timezone insanity
+* Timezone surprises
 * `Date.prototype` function name shenanigans
 * Other tricky arcane nonsense
 
