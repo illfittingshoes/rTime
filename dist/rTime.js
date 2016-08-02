@@ -90,7 +90,7 @@
   * object properties "get", "getUTC" (just an alias of "get"), and "getLocal" to group accessor
   * functions. Also has an "ms()" function property to return a Time Value instead of a Date object
   *
-  * @param {(string|...number|...timeFieldHash)}
+  * @param {(string|...number|...timeFieldHash|Date)}
   *         [timeArgs]
   *         Any of several formats for desired time parameters
   *
@@ -128,24 +128,18 @@
 		var firstArg = timeArgs[0];
 		var firstArgType = typeof firstArg === 'undefined' ? 'undefined' : _typeof(firstArg);
 
-		// exception to date alias approach: if the only argument is a number less
-		// than 10,000 (arbitrary), treat it as a year rather than a time value (ms)
-		if (numberOfArgs === 1 && firstArgType === 'number' && firstArg < 10000) {
-			return new Date(firstArg, 0);
+		if (numberOfArgs === 0 || firstArg === null) {
+			return new Date();
 		}
 
-		// simplest version. will return invalid date object if doesn't conform to one
-		// of these patterns:
-		// - Time Value (ms since 1970 UTC)
-		// - `new Date( YYYY, MM, DD, HH, MM, SS, MS )`
-		// - null
-		if (numberOfArgs > 1 || firstArgType === 'number' || firstArg === null) {
-			return new (Function.prototype.bind.apply(Date, [null].concat(timeArgs)))();
-		}
-
-		// single valid arg - either an array of values to try as args, a field/value hash,
+		// single valid arg - either an array of values to try as args, a timeFieldHash,
 		// or string, possibly user input
 		if (numberOfArgs === 1) {
+			// rTime(aDate) just returns the date
+			if (firstArg instanceof Date) {
+				return firstArg;
+			}
+
 			// allow an array, why not. Recurse.
 			if (Array.isArray(firstArg)) {
 				return rTime.apply(undefined, _toConsumableArray(firstArg));
@@ -153,23 +147,62 @@
 
 			// date/time string - valid, or returns Invalid Date object
 			if (firstArgType === 'string') {
+				return getExpectedDateFromString(firstArg);
+			}
+
+			if (firstArgType === 'number') {
+				// exception to date rules: if the only argument is a number less
+				// than five digits, treat it as a year rather than a time value (ms)
+				if (firstArg < 10000) {
+					return new Date(firstArg, 0);
+				}
+
 				return new Date(firstArg);
 			}
 		}
 
-		if (numberOfArgs > 0 && firstArgType === 'object') {
-			// plain object (non-Array, non-Null, non-Date) is a field/value hash
+		if (numberOfArgs > 1) {
+			if (firstArgType === 'number') {
+				var month = adjustMonthToDate(timeArgs[1]);
+
+				return new (Function.prototype.bind.apply(Date, [null].concat([firstArg, month], _toConsumableArray(timeArgs.slice(2)))))();
+			}
+
+			// TODO: first arg object, second arg array
+			// TODO: arrays(contents following above object, array format)
+		}
+
+		// one or more args made it through the filters
+		if (firstArgType === 'object') {
+			// plain object (non-Array, non-Null, non-Date) is a timeFieldHash
 			if (Object.keys(firstArg).length) {
 				return makeTimeFromFields.apply(undefined, timeArgs);
 			}
-		}
 
-		if (numberOfArgs === 0) {
 			return new Date();
 		}
 
-		// one weird arg (existing date object, bool, ?)
-		return new Date('invalid');
+		return new Date('one or more invalid arguments');
+	}
+
+	function adjustMonthToDate(month) {
+		// e.g. if the user puts in 3, they mean March not April
+		return month - 1;
+	}
+
+	function adjustMonthFromDate(month) {
+		// if rTime retrieves a month from a date, that number is low by 1
+		return month + 1;
+	}
+
+	function getExpectedDateFromString(dateString) {
+		// date/time from strings breaks with typical `new Date() behavior`:
+		// - month is correct
+		// - IF string is ISO format, it creates in UTC time rather than local
+		var rawDate = new Date(dateString);
+		var isISO = /^\d{4,6}-\d{2}-\d{2}$/.test(dateString);
+
+		return isISO ? new Date(rawDate.getTime() + rawDate.getTimezoneOffset() * 60 * 1000) : rawDate;
 	}
 
 	// eslint doesn't like this complex set of acceptable params
@@ -185,19 +218,23 @@
   */
 	// eslint-enable valid-jsdoc
 	rTime.ms = function ms() {
+		if (arguments.length === 0) {
+			return Date.now();
+		}
+
 		return rTime.get.timeInMs(rTime.apply(undefined, arguments));
 	};
 
 	/**
   * Object format to make new Date()s out of partial bits of information
   * @typedef {Object} timeFieldHash
-  * @property {number} year four digits
-  * @property {number} month 1-12
-  * @property {number} dayOfMonth 1-31
-  * @property {number} hour 0-23
-  * @property {number} minute 0-59
-  * @property {number} second 0-59
-  * @property {number} ms millisecond 0-999
+  * @property {number|Date} year four digits or a date to extract that value from
+  * @property {number|Date} month 1-12 or a date to extract that value from
+  * @property {number|Date} dayOfMonth 1-31 or a date to extract that value from
+  * @property {number|Date} hour 0-23 or a date to extract that value from
+  * @property {number|Date} minute 0-59 or a date to extract that value from
+  * @property {number|Date} second 0-59 or a date to extract that value from
+  * @property {number|Date} ms millisecond 0-999 or a date to extract that value from
   * @property {boolean} isUTC new time should be in UTC rather than local
   */
 
@@ -237,41 +274,43 @@
 			return nowDate;
 		}
 
-		var get = rTime.get;
+		var getLocal = rTime.getLocal;
 
 		var nowValues = {
-			year: get.year(nowDate),
-			month: get.month(nowDate),
-			dayOfMonth: get.dayOfMonth(nowDate),
-			hour: get.hour(nowDate),
-			minute: get.minute(nowDate),
-			second: get.second(nowDate),
-			ms: get.ms(nowDate)
+			year: getLocal.year(nowDate),
+			month: getLocal.month(nowDate),
+			dayOfMonth: getLocal.dayOfMonth(nowDate),
+			hour: getLocal.hour(nowDate),
+			minute: getLocal.minute(nowDate),
+			second: getLocal.second(nowDate),
+			ms: getLocal.ms(nowDate)
 		};
 
 		function reduceFields(_ref, fieldName) {
-			var prevDoUseMinVal = _ref.prevDoUseMinVal;
+			var prevDoUseMinValue = _ref.prevDoUseMinValue;
 			var latestValues = _ref.latestValues;
 			var defaults = _ref.defaults;
 
-			var newFieldVal = allFields[fieldName] !== undefined ? _defineProperty({}, fieldName, allFields[fieldName]) : {};
+			var rawFieldValue = allFields[fieldName];
+			var newFieldValue = rawFieldValue instanceof Date ? getLocal[fieldName](rawFieldValue) : rawFieldValue;
+			var newFieldObject = newFieldValue ? _defineProperty({}, fieldName, newFieldValue) : {};
 
-			var doUseMinVal = prevDoUseMinVal === true ? true : !!Object.keys(newFieldVal).length;
+			var doUseMinValue = prevDoUseMinValue ? true : !!newFieldValue;
 
 			// work around JS treating days and months like they're zero-based
 			var minFieldValue = fieldName === 'month' || fieldName === 'dayOfMonth' ? 1 : 0;
 
-			var fallbackValue = doUseMinVal === true ? _defineProperty({}, fieldName, minFieldValue) : _defineProperty({}, fieldName, defaults[fieldName]);
+			var fallbackValue = doUseMinValue === true ? _defineProperty({}, fieldName, minFieldValue) : _defineProperty({}, fieldName, defaults[fieldName]);
 
 			return {
-				prevDoUseMinVal: doUseMinVal,
-				latestValues: _extends({}, latestValues, fallbackValue, newFieldVal),
+				prevDoUseMinValue: doUseMinValue,
+				latestValues: _extends({}, latestValues, fallbackValue, newFieldObject),
 				defaults: defaults
 			};
 		}
 
 		var fullValues = Object.keys(nowValues).reduce(reduceFields, {
-			prevDoUseMinVal: false,
+			prevDoUseMinValue: false,
 			latestValues: {},
 			defaults: nowValues
 		});
@@ -288,11 +327,11 @@
 
 		if (allFields.isUTC) {
 			// convert month number to zero-based
-			return new Date(Date.UTC(year, month - 1, dayOfMonth, hour, minute, second, ms));
+			return new Date(Date.UTC(year, adjustMonthToDate(month), dayOfMonth, hour, minute, second, ms));
 		}
 
 		// convert month number to zero-based
-		return new Date(year, month - 1, dayOfMonth, hour, minute, second, ms);
+		return new Date(year, adjustMonthToDate(month), dayOfMonth, hour, minute, second, ms);
 	}
 
 	/**
@@ -310,26 +349,11 @@
 		timeValue: function timeValue(d) {
 			return d.getTime();
 		},
-		millenium: function millenium(d) {
-			var year = d.getUTCFullYear();
-
-			// we consider the year 2000 to be the 21st century, not gonna argue
-			var rawMillenia = (year + 1) / 1000;
-
-			return Math.ceil(rawMillenia);
-		},
-		century: function century(d) {
-			var year = d.getUTCFullYear();
-			var rawCenturiesNextYear = (year + 1) / 100;
-			var saneCenturyNextYear = Math.ceil(rawCenturiesNextYear);
-
-			return saneCenturyNextYear;
-		},
 		year: function year(d) {
 			return d.getUTCFullYear();
 		},
 		month: function month(d) {
-			return d.getUTCMonth() + 1;
+			return adjustMonthFromDate(d.getUTCMonth());
 		},
 		dayOfMonth: function dayOfMonth(d) {
 			return d.getUTCDate();
@@ -408,14 +432,11 @@
   * rTime.getLocal.hoursToUTC(someDate)
   */
 	rTime.getLocal = {
-		timeValue: function timeValue(d) {
-			return d.getTime() + this.msFromUTC(d);
-		},
 		year: function year(d) {
 			return d.getFullYear();
 		},
 		month: function month(d) {
-			return d.getMonth() + 1;
+			return adjustMonthFromDate(d.getMonth());
 		},
 		dayOfMonth: function dayOfMonth(d) {
 			return d.getDate();
@@ -425,6 +446,15 @@
 		},
 		hour: function hour(d) {
 			return d.getHours();
+		},
+		minute: function minute(d) {
+			return rTime.get.minute(d);
+		},
+		second: function second(d) {
+			return rTime.get.second(d);
+		},
+		ms: function ms(d) {
+			return rTime.get.ms(d);
 		},
 		msToUTC: function msToUTC(d) {
 			return d.getTimezoneOffset() * 60 * 1000;
@@ -443,12 +473,6 @@
 		},
 		hoursFromUTC: function hoursFromUTC(d) {
 			return -d.getTimezoneOffset() / 60;
-		},
-		timeInMs: function timeInMs(d) {
-			return this.timeValue(d);
-		},
-		time: function time(d) {
-			return this.timeValue(d);
 		},
 		fullYear: function fullYear(d) {
 			return this.year(d);

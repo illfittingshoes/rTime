@@ -113,3 +113,8 @@ sftp-config.json
 #####
 
 # App-specific
+built-tests
+README.html
+test.html
+rTime.sublime-project
+Vagrantfile

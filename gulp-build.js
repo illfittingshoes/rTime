@@ -50,8 +50,8 @@ const dest = {
 	lib:       './lib',
 	umd:       './dist',
 	jsdoc:     './docs',
-	testDir:   './tests',
-	testFiles: './tests/**/*.js',
+	testDir:   './built-tests',
+	testFiles: './built-tests/**/*.js',
 };
 
 const babelUmdOpts = {
@@ -103,37 +103,24 @@ gulp.task('build-and-test', ['lint-and-build'], (done) => {
 
 /* Lint then build lib */
 gulp.task('lint-and-build', ['eslint'], (done) => {
-	runSeq(['build-lib', 'build-uglified-lib', 'build-umd', 'build-uglified-umd'], done);
+	runSeq(['build-lib', 'build-umd', 'build-uglified-umd'], done);
 });
 
 /* Build for lib and UMD, regular and uglified */
-const jsLibStart = lazypipe()
-	.pipe(plumber, plumberOpts)
-	.pipe(newer, dest.lib)
-	.pipe(sourcemaps.init)
-	.pipe(babel);
 const jsUmdStart = lazypipe()
 	.pipe(plumber, plumberOpts)
 	.pipe(newer, dest.umd)
 	.pipe(sourcemaps.init)
 	.pipe(babel, babelUmdOpts)
 	.pipe(replace, /global\.(.*?) mod.exports/, "global.$1 mod.exports['default']");
-const jsUglify = lazypipe()
-	.pipe(uglify)
-	.pipe(rename, { extname: '.min.js' })
-	.pipe(sourcemaps.write, '.');
 
 gulp.task('build-lib', () => gulp.src(source.main)
-	.pipe(jsLibStart())
+	.pipe(plumber(plumberOpts))
+	.pipe(newer(dest.lib))
+	.pipe(sourcemaps.init())
+	.pipe(babel())
 	.pipe(sourcemaps.write('.'))
-	.pipe(gulp.dest(dest.lib))
-);
-
-gulp.task('build-uglified-lib', () => gulp.src(source.main)
-	.pipe(jsLibStart())
-	.pipe(jsUglify())
-	.pipe(gulp.dest(dest.lib))
-);
+	.pipe(gulp.dest(dest.lib)));
 
 gulp.task('build-umd', () => gulp.src(source.main)
 	.pipe(jsUmdStart())
@@ -143,7 +130,9 @@ gulp.task('build-umd', () => gulp.src(source.main)
 
 gulp.task('build-uglified-umd', () => gulp.src(source.main)
 	.pipe(jsUmdStart())
-	.pipe(jsUglify())
+	.pipe(uglify())
+	.pipe(rename({ extname: '.min.js' }))
+	.pipe(sourcemaps.write('.'))
 	.pipe(gulp.dest(dest.umd))
 );
 

@@ -113,10 +113,6 @@
 <td><code>rTime.ms();</code></td>
 </tr>
 <tr>
-<td><code>new Date(new Date().getFullYear(), 1, 1, 14);</code></td>
-<td><code>rTime({&quot;month&quot;: 2, &quot;hour&quot;: 14});</code></td>
-</tr>
-<tr>
 <td><code>new Date().getFullYear();</code></td>
 <td><code>rTime.getLocal.year(rTime())</code></td>
 </tr>
@@ -126,15 +122,23 @@
 </tr>
 <tr>
 <td><code>new Date().getTimezoneOffset();</code></td>
-<td><code>rTime.get.minutesToUTC(rTime());</code></td>
+<td><code>rTime.getLocal.minutesToUTC(rTime());</code></td>
+</tr>
+<tr>
+<td><code>new Date(new Date().getFullYear(), 1, 1, 14);</code></td>
+<td><code>rTime({'month': 2, 'hour': 14});</code></td>
+</tr>
+<tr>
+<td><code>new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate(), 14, 30);</code></td>
+<td><code>rTime({'hour': 14, 'minute': 30});</code></td>
 </tr>
 </tbody>
 </table>
 <p>From Examples (todo: link)</p>
-<h2>Description</h2><p>rTime is a static, relatively low-level library for creating and retrieving data from Date objects, dealing with the <code>Date</code>oddities <em>so we don't have to</em>. It from the desire to prevent exasperated face-palms while working with the <code>Date</code> object and its many, many quirks:</p>
+<h2>Description</h2><p>rTime is a static, relatively low-level library for creating and retrieving data from Date objects, dealing with the <code>Date</code> oddities <em>so we don't have to</em>. <code>Date</code> oddities like:</p>
 <ul>
 <li>Months are zero-based</li>
-<li>Timezone insanity</li>
+<li>Timezone surprises</li>
 <li><code>Date.prototype</code> function name shenanigans</li>
 <li>Other tricky arcane nonsense</li>
 </ul>
@@ -146,11 +150,11 @@
 <li>in rTime, as in reality, month 1 === January</li>
 </ul>
 </li>
-<li>The original <code>Date</code> naming is madness, so rTime makes <a href="# time-field-names">some adjustments</a> from <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">their originals</a> for consistency and/or accuracy. For familiarity, alias functions have been included using their <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">original names</a><ul>
-<li>No aliases work in <a href="# time-field-objects">time field objects</a></li>
+<li>The original <code>Date</code> naming is madness, so rTime makes <a href="#time-field-names">some adjustments</a> from <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">their originals</a> for consistency and/or accuracy. For familiarity, alias functions have been included using their <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">original names</a><ul>
+<li>No aliases work in <a href="#time-field-objects">time field objects</a></li>
 </ul>
 </li>
-<li><code>Date# getTimezoneOffset()</code> is backwards<ul>
+<li><code>Date#getTimezoneOffset()</code> is backwards<ul>
 <li>If you're in GMT-0400 (UTC minus 4 hours), <code>Date</code> will give you <code>240</code> instead of <code>-240</code></li>
 <li>rTime adds some clearer functions:<ul>
 <li><code>rTime.getLocal.[ms/minutes/hours]ToUTC()</code></li>
@@ -162,7 +166,7 @@
 </li>
 <li>Call style is more functional than OOP</li>
 </ul>
-<p>One sweeping difference is in priorities. For both <code>Date</code> and rTime, all dates are stored as UTC, most often as a conversion from local time. <code>Date</code> prioritizes making the simple things easy most of the time, but that makes things difficult sometimes, such as <a href="# advanced-date-time-manipulation">relative date/time calculations or changing the nature of a date/time</a>.</p>
+<p>One sweeping difference is in priorities. For both <code>Date</code> and rTime, all dates are stored as UTC, most often as a conversion from local time. <code>Date</code> prioritizes making the simple things easy most of the time, but that makes things difficult sometimes, such as <a href="#advanced-date-time-manipulation">relative date/time calculations or changing the nature of a date/time</a>.</p>
 <p>rTime attempts to prioritize the latter by explicitly requiring the word &quot;local&quot; whenever a conversion from UTC to local time occurs.</p>
 <p>Here's a comparison:</p>
 <table>
@@ -176,12 +180,12 @@
 <tbody>
 <tr>
 <td>Retrieve a field in local time</td>
-<td><code>Date# get[FieldName]()</code></td>
+<td><code>Date#get[FieldName]()</code></td>
 <td><code>rTime.getLocal.[fieldName](aDate)</code></td>
 </tr>
 <tr>
 <td>Retrieve a field in UTC (stored) time</td>
-<td><code>Date# getUTC[FieldName]()</code></td>
+<td><code>Date#getUTC[FieldName]()</code></td>
 <td><code>rTime.get.[fieldName](aDate)</code></td>
 </tr>
 </tbody>
@@ -204,7 +208,7 @@
 <p>todo: links</p>
 <h2>Usage</h2><p>rTime is a better option than the <code>Date</code> API basically every time, but there are a smaller number of situations where it provides a critical advantage.</p>
 <p>Note: Unlike Moment, JQuery, the like, there is no such thing as &quot;an rTime object&quot; for function chaining: it's just plain old Date objects all the way down.</p>
-<h3>Common <code>Date</code> Usage</h3><p>In most scenarios, rTime's biggest benefit is removing <a href="http://www.stroustrup.com/bs_faq.html# really-say-that">foot</a> <a href="https://github.com/stepframe/Style-Guide# brendan-eich-the-creator-of-javascript-talks-a-lot-about-foot-guns">guns</a>: it's easier, less error-prone, provides the option of using <a href="# time-field-objects">time field objects</a>. And because it's fashioned after <code>Date</code>, it's still pretty familiar.</p>
+<h3>Common <code>Date</code> Usage</h3><p>In most scenarios, rTime's biggest benefit is removing <a href="http://www.stroustrup.com/bs_faq.html#really-say-that">foot</a> <a href="https://github.com/stepframe/Style-Guide#brendan-eich-the-creator-of-javascript-talks-a-lot-about-foot-guns">guns</a>: it's easier, less error-prone, provides the option of using <a href="#time-field-objects">time field objects</a>. And because it's fashioned after <code>Date</code>, it's still pretty familiar.</p>
 <h3>Advanced Date/Time Manipulation</h3><p>Working with different relationships of date/times, which is theoretically fairly simple, is where rTime really comes into its own:</p>
 <ul>
 <li>Calculating relative times, like the distance between two date/times</li>
@@ -232,11 +236,11 @@
 <p><code>rTime()</code> and <code>rTime.ms()</code> can also:</p>
 <ul>
 <li>Accept a time field object(time-field-objects)</li>
-<li>Accept an array of any kind of arguments#### Time Field Naming
+<li>Accept an array of any kind of arguments####Time Field Naming
 rTime uses slightly different names for everything, because most of the names used by <code>Date</code> could use improvement. For familiarity, all the original names are aliased for every function.</li>
 </ul>
 <h3>Time Field Names</h3><p>rTime tries to be as consistent as possible, especially with function and field names. For familiarity, there are alias functions for each of the original <code>Date</code>-style names.</p>
-<p><strong>Note</strong>: <a href="# time-field-objects">Time Field Objects</a> do not support any aliases.</p>
+<p><strong>Note</strong>: <a href="#time-field-objects">Time Field Objects</a> do not support any aliases.</p>
 <p>Here is what rTime calls everything:</p>
 <table>
 <thead>
@@ -252,7 +256,7 @@ rTime uses slightly different names for everything, because most of the names us
 <td>fullYear</td>
 <td>year</td>
 <td></td>
-<td><code>Date# getYear()</code> is completely excluded because it's totally vestigial</td>
+<td><code>Date#getYear()</code> is completely excluded because it's totally vestigial</td>
 </tr>
 <tr>
 <td>month</td>
@@ -299,23 +303,25 @@ rTime uses slightly different names for everything, because most of the names us
 <pre class="prettyprint source lang-javascript"><code>// preferred clear name
 rTime.getLocal.dayOfMonth(rTime());
 // original ambiguous `Date` name
-rTime.getLocal.date(rTime());</code></pre><h3>Time Field Objects</h3><p>Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTime allows for new date/times to be created by passing in a key/value object with any desired fields. They use the rTime standard field names and behaviors. Time Field Objects can have anywhere from zero fields (<code>rTime({})</code> is the same as <code>rTime()</code>) to all of them, in any order, and can be &quot;sparsely&quot; populated. The format is simple; here is an example with one of everything:</p>
-<pre class="prettyprint source lang-javascript"><code>{
-    &quot;year&quot;: 2011,
-    &quot;month&quot;: 2,
-    &quot;day&quot;: 13,
-    &quot;hour&quot;: 14,
-    &quot;minute&quot;: 15,
-    &quot;second&quot;: 16,
-    &quot;ms&quot;: 170
-}</code></pre><p><strong>Note</strong>: none of the function name aliases work as time field object property names. For example, <code>{&quot;fullYear&quot;: 2012}</code> will not work (should be just &quot;year&quot;), nor will {&quot;dayOfWeek&quot;: 2} (should be just &quot;day&quot;).</p>
-<h3>Timezone Function Shenanigans</h3><p><code>Date</code> has one explicit timezone function: <code>Date# getTimezoneOffset()</code>. It returns minutes, which is fine, but it's backwards: If you're in GMT-0400, it will return 240 (4 hours, but not negative like it should be).</p>
-<p><code>rTime.getLocal</code> has several more straightforward functions:</p>
-<ul>
-<li><code>rTime.getLocal.[ms/minutes/hours]ToUTC()</code></li>
-<li><code>rTime.getLocal.[ms/minutes/hours]FromUTC()</code></li>
-</ul>
-<p><code>rTime.[get/getLocal].timezoneOffset()</code> is also available, as an alias of <code>rTime.getLocal.minutesToUTC()</code> for familiarity.</p></article>
+rTime.getLocal.date(rTime());</code></pre><h3>Time Field Objects</h3><p>Sometimes clarity helps more than brevity. Either way, rTime has it covered. rTime allows for new date/times to be created by passing in a key/value object with any desired fields. They use the rTime standard field names and behaviors.</p>
+<p>Time Field Objects can have zero or more fields, in any order, and can be &quot;sparsely&quot; populated. The format is simple; here are a couple examples:</p>
+<pre class="prettyprint source lang-javascript"><code>const allFields = {
+    'year': 2011,
+    'month': 2,
+    'dayOfMonth': 13,
+    'hour': 14,
+    'minute': 15,
+    'second': 16,
+    'ms': 170
+}
+
+const aCoupleFields = {
+    'hour': 14,
+    'minute': 30
+}
+
+// maybe the object is created from user input
+const stillOkay = {}</code></pre></article>
     </section>
 
 
@@ -363,7 +369,7 @@ rTime.getLocal.date(rTime());</code></pre><h3>Time Field Objects</h3><p>Sometime
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on Jul 27, 2016
+		on Aug 2, 2016
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
